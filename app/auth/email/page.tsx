@@ -10,7 +10,6 @@ import {
   signOut,
 } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebase/client";
-import { getIsAdmin } from "@/lib/firebase/claims";
 
 export default function EmailAuthPage() {
   const router = useRouter();
@@ -22,7 +21,6 @@ export default function EmailAuthPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [awaitingVerification, setAwaitingVerification] = useState(false);
 
   async function signUpWithEmail(e: FormEvent) {
     e.preventDefault();
@@ -45,33 +43,10 @@ export default function EmailAuthPage() {
         url: `${appUrl}/auth/login`,
       });
       await signOut(firebaseAuth);
-      setAwaitingVerification(true);
       setMessage(
-        "Verification email sent. Please open your email and click the verification link."
+        "Verification email sent. Please open your email and click the verification link, then log in."
       );
-    } catch (err) {
-      setMessage(getErrorMessage(err));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function checkEmailVerified() {
-    setMessage(null);
-    setBusy(true);
-    try {
-      const u = firebaseAuth.currentUser;
-      if (!u) {
-        setMessage("Please sign in again, then click “I verified”.");
-        return;
-      }
-      await u.reload();
-      if (u.emailVerified) {
-        const isAdmin = await getIsAdmin(u);
-        router.replace(isAdmin ? "/admin" : "/user");
-      } else {
-        setMessage("Not verified yet. Check your email and try again.");
-      }
+      router.replace("/auth/login");
     } catch (err) {
       setMessage(getErrorMessage(err));
     } finally {
@@ -188,17 +163,6 @@ export default function EmailAuthPage() {
             >
               Sign up
             </button>
-
-            {awaitingVerification ? (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={checkEmailVerified}
-                className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-semibold transition hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
-              >
-                I verified my email
-              </button>
-            ) : null}
           </form>
         </section>
 
