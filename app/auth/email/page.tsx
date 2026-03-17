@@ -38,8 +38,11 @@ export default function EmailAuthPage() {
         email,
         password
       );
+      const appUrl =
+        process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
+        window.location.origin;
       await sendEmailVerification(cred.user, {
-        url: `${window.location.origin}/auth`,
+        url: `${appUrl}/auth/login`,
       });
       await signOut(firebaseAuth);
       setAwaitingVerification(true);
