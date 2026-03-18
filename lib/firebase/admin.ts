@@ -7,18 +7,8 @@ export function getFirebaseAdminApp() {
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
     if (!clientEmail || !privateKey || !projectId) {
-      // Try local serviceAccount.json as a last resort (for local dev)
-      try {
-        const serviceAccount = require("../../serviceAccount.json");
-        admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount),
-          databaseURL: `https://${projectId || serviceAccount.project_id}.firebaseio.com`,
-        });
-        return admin.app();
-      } catch (e) {
-        console.error("Firebase Admin could not be initialized: Missing environment variables.");
-        return null;
-      }
+      console.error("Firebase Admin could not be initialized: Missing environment variables.");
+      return null;
     }
 
     try {
