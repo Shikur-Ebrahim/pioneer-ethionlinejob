@@ -72,7 +72,7 @@ export default async function Home() {
 
           {/* Text Content (Left on Desktop, Below Video on Mobile) */}
           <div className="flex flex-col items-start px-5 sm:px-0 py-1 lg:py-0 order-2 lg:order-1">
-            <h1 className="text-balance text-3xl font-bold tracking-tight sm:text-5xl lg:text-7xl text-black dark:text-white">
+            <h1 className="text-balance text-2xl font-bold tracking-tight sm:text-4xl lg:text-6xl text-black dark:text-white">
               Start your journey with{" "}
               <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
                 Pioneer Ethio Online Job
