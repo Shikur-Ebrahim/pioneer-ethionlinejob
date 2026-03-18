@@ -5,6 +5,8 @@ import { getFirestore } from "firebase-admin/firestore";
 
 export async function getWelcomeVideosServer() {
   const adminApp = getFirebaseAdminApp();
+  if (!adminApp) return [];
+  
   const db = getFirestore(adminApp);
   
   try {
@@ -17,12 +19,14 @@ export async function getWelcomeVideosServer() {
     }));
   } catch (error) {
     console.error("Error in getWelcomeVideosServer:", error);
-    throw new Error("Failed to fetch videos from server");
+    return [];
   }
 }
 
 export async function addWelcomeVideoServer(video: any) {
   const adminApp = getFirebaseAdminApp();
+  if (!adminApp) throw new Error("Firebase not initialized");
+  
   const db = getFirestore(adminApp);
   
   try {
@@ -40,6 +44,8 @@ export async function addWelcomeVideoServer(video: any) {
 
 export async function updateWelcomeVideoServer(id: string, video: any) {
   const adminApp = getFirebaseAdminApp();
+  if (!adminApp) throw new Error("Firebase not initialized");
+  
   const db = getFirestore(adminApp);
   
   try {
@@ -54,6 +60,8 @@ export async function updateWelcomeVideoServer(id: string, video: any) {
 
 export async function deleteWelcomeVideoServer(id: string) {
   const adminApp = getFirebaseAdminApp();
+  if (!adminApp) throw new Error("Firebase not initialized");
+  
   const db = getFirestore(adminApp);
   
   try {

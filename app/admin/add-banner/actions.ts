@@ -7,6 +7,8 @@ const COLLECTION_NAME = "banners";
 
 export async function getBannersServer() {
   const adminApp = getFirebaseAdminApp();
+  if (!adminApp) return [];
+  
   const db = getFirestore(adminApp);
   
   try {
@@ -18,12 +20,14 @@ export async function getBannersServer() {
     }));
   } catch (error) {
     console.error("Error in getBannersServer:", error);
-    throw new Error("Failed to fetch banners");
+    return [];
   }
 }
 
 export async function addBannerServer(banner: any) {
   const adminApp = getFirebaseAdminApp();
+  if (!adminApp) throw new Error("Firebase not initialized");
+  
   const db = getFirestore(adminApp);
   
   try {
@@ -41,6 +45,8 @@ export async function addBannerServer(banner: any) {
 
 export async function updateBannerServer(id: string, banner: any) {
   const adminApp = getFirebaseAdminApp();
+  if (!adminApp) throw new Error("Firebase not initialized");
+  
   const db = getFirestore(adminApp);
   
   try {
@@ -55,6 +61,8 @@ export async function updateBannerServer(id: string, banner: any) {
 
 export async function deleteBannerServer(id: string) {
   const adminApp = getFirebaseAdminApp();
+  if (!adminApp) throw new Error("Firebase not initialized");
+  
   const db = getFirestore(adminApp);
   
   try {
