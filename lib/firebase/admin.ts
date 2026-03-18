@@ -2,32 +2,34 @@ import * as admin from "firebase-admin";
 
 export function getFirebaseAdminApp() {
   if (!admin.apps.length) {
-    let credential;
-    try {
-      // First try to load from a local service account file if it exists
-      credential = admin.credential.cert(require("../../serviceAccount.json"));
-    } catch (e) {
-      // Fallback to environment variables if the file isn't present
-      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-      const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-      const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
-      if (!clientEmail || !privateKey || !projectId) {
+    if (!clientEmail || !privateKey || !projectId) {
+      // If we are in development and have a local service account, we can still use it
+      // but we use a dynamic import/require to avoid breaking production builds
+      try {
+        const serviceAccount = require("../../serviceAccount.json");
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+          databaseURL: `https://${projectId || serviceAccount.project_id}.firebaseio.com`,
+        });
+        return admin.app();
+      } catch (e) {
         throw new Error(
-          "Firebase admin initialization failed: Missing serviceAccount.json or environment variables (FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, NEXT_PUBLIC_FIREBASE_PROJECT_ID)"
+          "Firebase admin initialization failed: Missing environment variables (FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, NEXT_PUBLIC_FIREBASE_PROJECT_ID) and no serviceAccount.json found."
         );
       }
-
-      credential = admin.credential.cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      });
     }
 
     admin.initializeApp({
-      credential,
-      databaseURL: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseio.com`, // Fixed typo
+      credential: admin.credential.cert({
+        projectId,
+        clientEmail,
+        privateKey,
+      }),
+      databaseURL: `https://${projectId}.firebaseio.com`,
     });
   }
 

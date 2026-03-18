@@ -5,6 +5,8 @@ import { Target, TrendingUp, Wallet, Compass } from "lucide-react";
 import { getWelcomeVideosServer } from "./admin/welcome-video/actions";
 import { getBannersServer } from "./admin/add-banner/actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const videos = (await getWelcomeVideosServer()) || [];
   const latestVideo = videos.length > 0 ? (videos[0] as any) : null;
