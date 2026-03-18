@@ -16,6 +16,9 @@ export async function DELETE(
     }
 
     const adminApp = getFirebaseAdminApp();
+    if (!adminApp) {
+      return NextResponse.json({ error: "Firebase not initialized" }, { status: 500 });
+    }
     const db = getFirestore(adminApp);
 
     // 2. Delete from Firestore

@@ -8,6 +8,9 @@ export async function POST(request: Request) {
     // The admin route itself is protected by client-side layout guards.
 
     const adminApp = getFirebaseAdminApp();
+    if (!adminApp) {
+      return NextResponse.json({ error: "Firebase not initialized" }, { status: 500 });
+    }
     const db = getFirestore(adminApp);
 
     // 2. Parse request body
@@ -39,6 +42,9 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const adminApp = getFirebaseAdminApp();
+    if (!adminApp) {
+      return NextResponse.json({ videos: [] }, { status: 200 });
+    }
     const db = getFirestore(adminApp);
     
     const snapshot = await db.collection("welcome-video")
@@ -60,6 +66,9 @@ export async function GET() {
     if (error.message?.includes("index")) {
        try {
          const adminApp = getFirebaseAdminApp();
+         if (!adminApp) {
+            return NextResponse.json({ videos: [] }, { status: 200 });
+         }
          const db = getFirestore(adminApp);
          const fbSnapshot = await db.collection("welcome-video").get();
          const fbVideos = fbSnapshot.docs.map(doc => ({
