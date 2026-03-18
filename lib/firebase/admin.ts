@@ -27,9 +27,7 @@ export function getFirebaseAdminApp() {
 
     admin.initializeApp({
       credential,
-      databaseURL: `https://\${
-        process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-      }.firebaseio.com`,
+      databaseURL: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseio.com`,
     });
   }
 
