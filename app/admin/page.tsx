@@ -1,33 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebase/client";
-import { getIsAdmin } from "@/lib/firebase/claims";
+import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [checking, setChecking] = useState(true);
-
-  useEffect(() => {
-    return onAuthStateChanged(firebaseAuth, async (u) => {
-      setUser(u);
-      if (!u) {
-        setChecking(false);
-        router.replace("/auth/login");
-        return;
-      }
-      try {
-        const isAdmin = await getIsAdmin(u);
-        if (!isAdmin) router.replace("/user");
-      } finally {
-        setChecking(false);
-      }
-    });
-  }, [router]);
 
   async function logout() {
     await signOut(firebaseAuth);
@@ -35,37 +13,39 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-50">
-      <main className="mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-10">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="text-sm font-semibold">
-            pioneer-ethionlinejob
-          </Link>
-          <button
-            type="button"
-            onClick={logout}
-            className="text-sm font-semibold text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
-          >
-            Sign out
-          </button>
-        </div>
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <button
+          type="button"
+          onClick={logout}
+          className="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40 font-medium transition-colors"
+        >
+          Sign out
+        </button>
+      </div>
 
-        <div className="mt-10 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Admin
-          </h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            {checking
-              ? "Checking access…"
-              : user
-                ? `Signed in as ${user.email ?? user.uid}.`
-                : "Not signed in."}
-          </p>
-          <div className="mt-6 text-sm text-zinc-700 dark:text-zinc-300">
-            This is the admin landing page.
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+          <h3 className="font-semibold text-zinc-500 dark:text-zinc-400 text-sm">Total Users</h3>
+          <p className="text-3xl font-bold mt-2">1,248</p>
         </div>
-      </main>
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+          <h3 className="font-semibold text-zinc-500 dark:text-zinc-400 text-sm">Active Banners</h3>
+          <p className="text-3xl font-bold mt-2">12</p>
+        </div>
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+          <h3 className="font-semibold text-zinc-500 dark:text-zinc-400 text-sm">Total Views</h3>
+          <p className="text-3xl font-bold mt-2">84.2K</p>
+        </div>
+      </div>
+      
+      <div className="mt-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+        <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
+        <div className="text-sm text-zinc-600 dark:text-zinc-400">
+          This is the admin landing page. More statistics and details will appear here.
+        </div>
+      </div>
     </div>
   );
 }
