@@ -149,7 +149,7 @@ export default function AddBannerPage() {
                 </div>
                 <button 
                     onClick={() => handleOpenModal()}
-                    className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 py-3 rounded-2xl font-black uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
+                    className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 py-3 rounded-2xl font-black transition-all shadow-xl shadow-emerald-500/20 active:scale-95"
                 >
                     <Plus className="h-5 w-5" />
                     New Banner
@@ -160,7 +160,7 @@ export default function AddBannerPage() {
             {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-32 bg-slate-900/40 border border-slate-800 rounded-[2.5rem] backdrop-blur-xl">
                     <Loader2 className="h-12 w-12 text-emerald-500 animate-spin mb-4" />
-                    <span className="text-sm font-black uppercase tracking-[0.3em] text-slate-500 animate-pulse">Loading Banners...</span>
+                    <span className="text-sm font-black text-slate-500 animate-pulse">Loading Banners...</span>
                 </div>
             ) : banners.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-32 bg-slate-900/40 border border-slate-800 rounded-[2.5rem] backdrop-blur-xl group">
@@ -168,7 +168,7 @@ export default function AddBannerPage() {
                         <IconImage className="h-10 w-10" />
                     </div>
                     <span className="text-lg font-bold text-slate-400 mb-2">No Banners Found</span>
-                    <button onClick={() => handleOpenModal()} className="text-emerald-500 font-black uppercase tracking-widest text-xs hover:text-emerald-400">Add your first banner</button>
+                    <button onClick={() => handleOpenModal()} className="text-emerald-500 font-black text-xs hover:text-emerald-400">Add your first banner</button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -202,7 +202,7 @@ export default function AddBannerPage() {
                             
                             <div className="p-6">
                                 <h3 className="text-xl font-black text-white truncate mb-1">{banner.name}</h3>
-                                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-black">
                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                     {new Date(banner.createdAt).toLocaleDateString()}
                                 </div>
@@ -230,7 +230,7 @@ export default function AddBannerPage() {
 
                             <form onSubmit={handleSave} className="space-y-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 pl-1">Banner Placement / Name</label>
+                                    <label className="text-[10px] font-black text-slate-500 pl-1">Banner Placement / Name</label>
                                     <input 
                                         type="text" 
                                         required
@@ -242,7 +242,7 @@ export default function AddBannerPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 pl-1">Image Asset</label>
+                                    <label className="text-[10px] font-black text-slate-500 pl-1">Image Asset</label>
                                     <div 
                                         onClick={() => !isUploading && fileInputRef.current?.click()}
                                         className={`aspect-[21/9] rounded-[2rem] border-2 border-dashed flex flex-col items-center justify-center text-center cursor-pointer transition-all relative overflow-hidden group
@@ -269,7 +269,7 @@ export default function AddBannerPage() {
                                                 {isUploading && (
                                                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]">
                                                         <Loader2 className="h-12 w-12 text-emerald-500 animate-spin mb-4" />
-                                                        <div className="text-sm text-white font-black uppercase tracking-[0.2em] animate-pulse">Uploading...</div>
+                                                        <div className="text-sm text-white font-black animate-pulse">Uploading...</div>
                                                     </div>
                                                 )}
                                                 {!isUploading && (
@@ -278,7 +278,7 @@ export default function AddBannerPage() {
                                                             <div className="h-14 w-14 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md border border-white/20 mb-3 transition-all scale-90 group-hover:scale-100">
                                                                 <RefreshCw className="h-6 w-6" />
                                                             </div>
-                                                            <span className="text-[10px] text-white font-black uppercase tracking-widest">Change Image</span>
+                                                            <span className="text-[10px] text-white font-black">Change Image</span>
                                                         </div>
                                                     </div>
                                                 )}
@@ -288,8 +288,8 @@ export default function AddBannerPage() {
                                                 <div className="h-16 w-16 bg-slate-900 rounded-2xl flex items-center justify-center mb-6 text-slate-600 group-hover:text-emerald-500 transition-all border border-slate-800 shadow-lg">
                                                     <Upload className="h-8 w-8" />
                                                 </div>
-                                                <div className="text-sm text-slate-400 font-bold uppercase tracking-widest mb-1">Select Banner Image</div>
-                                                <div className="text-[10px] text-slate-600 uppercase font-black tracking-tighter italic">PNG, JPG or WebP (max 5MB)</div>
+                                                <div className="text-sm text-slate-400 font-bold mb-1">Select Banner Image</div>
+                                                <div className="text-[10px] text-slate-600 font-black italic">PNG, JPG or WebP (max 5MB)</div>
                                             </div>
                                         )}
                                     </div>
@@ -298,7 +298,7 @@ export default function AddBannerPage() {
                                 <button 
                                     type="submit"
                                     disabled={isSaving || isUploading || !name || !publicId}
-                                    className={`w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 shadow-2xl active:scale-95
+                                    className={`w-full py-5 rounded-2xl font-black transition-all flex items-center justify-center gap-3 shadow-2xl active:scale-95
                                         ${(!name || !publicId) ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 
                                           'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20'}`}
                                 >
