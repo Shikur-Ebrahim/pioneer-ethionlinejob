@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Briefcase, ClipboardList, User } from "lucide-react";
+import { Home, Briefcase, Clapperboard, User } from "lucide-react";
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -10,7 +10,7 @@ export function BottomNav() {
   const navItems = [
     { id: "home", label: "Home", icon: <Home size={20} />, href: "/user" },
     { id: "work", label: "Work", icon: <Briefcase size={20} />, href: "/user/work" },
-    { id: "record", label: "Record", icon: <ClipboardList size={20} />, href: "/user/record" },
+    { id: "worker", label: "Worker", icon: <Clapperboard size={20} />, href: "/user/worker" },
     { id: "profile", label: "Profile", icon: <User size={20} />, href: "/user/profile" },
   ];
 

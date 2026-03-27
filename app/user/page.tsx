@@ -7,7 +7,7 @@ import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebase/client";
 import { BottomNav } from "./_components/BottomNav";
 import { getHomeVideosServer } from "../admin/home-video/actions";
-import { Play, Loader2, Wallet, Plus, ArrowUpRight, ShoppingCart, History, UserPlus, Briefcase, PlayCircle, HelpCircle } from "lucide-react";
+import { Play, Loader2, Wallet, Plus, ArrowUpRight, ShoppingCart, Clapperboard, UserPlus, Briefcase, PlayCircle, HelpCircle } from "lucide-react";
  
 export default function UserHomePage() {
   const router = useRouter();
@@ -125,13 +125,13 @@ export default function UserHomePage() {
           </Link>
 
           <Link
-            href="/user/record"
+            href="/user/worker"
             className="flex flex-col items-center justify-center gap-3 p-6 rounded-[2rem] bg-emerald-600 text-white shadow-xl shadow-emerald-500/20 transition-all hover:-translate-y-1 active:scale-95 group"
           >
             <div className="h-12 w-12 bg-white/20 rounded-2xl flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
-              <History className="h-6 w-6" />
+              <Clapperboard className="h-6 w-6" />
             </div>
-            <span className="text-[11px] font-black tracking-tight">Records</span>
+            <span className="text-[11px] font-black tracking-tight">Worker</span>
           </Link>
 
           <Link
