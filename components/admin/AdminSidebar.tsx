@@ -118,6 +118,15 @@ const sidebarLinks = [
     ),
   },
   {
+    name: "Telegram",
+    href: "/admin/telegram",
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 5l-9.5 9.5m0 0L8 11m3.5 3.5L7 21l2.5-6.5m12-9.5L3 10l5 1 1 5 12-11z" />
+      </svg>
+    ),
+  },
+  {
     name: "Work Flow",
     href: "/admin/workflow",
     icon: (
@@ -152,20 +161,20 @@ export function AdminSidebar() {
         </button>
       </div>
 
-      <aside className={`\${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed md:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 transition-transform duration-300 ease-in-out flex flex-col`}>
+      <aside className={`${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed md:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 transition-transform duration-300 ease-in-out flex flex-col`}>
         <div className="p-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Admin Panel</h2>
         </div>
         
         <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
-          {sidebarLinks.map((link: any) => {
+          {sidebarLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 \${
+                className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 ${
                   isActive
                     ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium"
                     : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-50"
