@@ -48,14 +48,14 @@ export default async function Home() {
         </Link>
       </header>
 
-      <main className="relative mx-auto max-w-6xl px-5 pb-32 pt-0 sm:px-6 sm:pt-2">
+      <main className="relative mx-auto max-w-6xl px-2 pb-32 pt-0 sm:px-6 sm:pt-2">
         {/* Responsive Hero Section with Synchronized Video */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-12 items-center w-full pt-0">
 
           {/* Mobile-Only Video: At the top (Hidden on Desktop) */}
           {latestVideo?.imageId && (
-            <div className="w-full h-full lg:hidden order-1 px-5 pt-1">
-              <div className="group relative aspect-video w-full overflow-hidden bg-zinc-900 rounded-xl shadow-xl ring-1 ring-zinc-200 dark:ring-zinc-800">
+            <div className="w-full h-full lg:hidden order-1 pt-1">
+              <div className="group relative aspect-[4/3] sm:aspect-video w-full overflow-hidden bg-zinc-900 rounded-xl shadow-xl ring-1 ring-zinc-200 dark:ring-zinc-800">
                 <video
                   src={getCloudinaryUrl(latestVideo.imageId, "video")}
                   className="h-full w-full object-cover"
@@ -71,7 +71,7 @@ export default async function Home() {
           )}
 
           {/* Text Content (Left on Desktop, Below Video on Mobile) */}
-          <div className="flex flex-col items-start px-5 sm:px-0 py-1 lg:py-0 order-2 lg:order-1">
+          <div className="flex flex-col items-start px-0 py-1 lg:py-0 order-2 lg:order-1">
             <h1 className="text-balance text-2xl font-bold tracking-tight sm:text-4xl lg:text-6xl text-black dark:text-white">
               Start your journey with{" "}
               <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
@@ -83,16 +83,16 @@ export default async function Home() {
               Create your account and sign up easily. After sign up, you can apply to work with us and start earning daily income through advertisement tasks.
             </p>
 
-            <div className="mt-8 grid w-full max-w-md grid-cols-2 gap-3 sm:flex sm:w-auto sm:max-w-none sm:items-center">
+            <div className="mt-8 grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto sm:max-w-none sm:items-center">
               <Link
                 href="/auth"
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-emerald-600 px-8 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-500 hover:-translate-y-0.5"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-emerald-600 px-4 sm:px-8 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-500 hover:-translate-y-0.5"
               >
                 Start Working
               </Link>
               <Link
                 href="/auth/login"
-                className="inline-flex h-12 items-center justify-center rounded-xl border border-zinc-200 bg-white px-8 text-sm font-bold text-zinc-900 shadow-sm transition hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:hover:bg-zinc-900"
+                className="inline-flex h-12 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 sm:px-8 text-sm font-bold text-zinc-900 shadow-sm transition hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:hover:bg-zinc-900"
               >
                 Log in
               </Link>
@@ -101,7 +101,7 @@ export default async function Home() {
 
           {/* Desktop-Only Video: At the right (Hidden on Mobile) */}
           {latestVideo?.imageId && (
-            <div className="hidden lg:block w-full h-full min-h-[400px] order-3 lg:order-2">
+            <div className="hidden lg:block w-full h-full min-h-[460px] xl:min-h-[520px] order-3 lg:order-2">
               <div className="group relative h-full w-full overflow-hidden bg-zinc-900">
                 <video
                   src={getCloudinaryUrl(latestVideo.imageId, "video")}
@@ -159,7 +159,7 @@ export default async function Home() {
               if (!bImg) return null;
               return (
                 <Fragment key={`${banner.imageId || index}-${index}`}>
-                  <div className="relative h-28 w-48 sm:h-36 sm:w-64 flex-shrink-0 group overflow-hidden px-1 py-1">
+                  <div className="relative h-16 w-32 sm:h-28 sm:w-48 md:h-36 md:w-64 flex-shrink-0 group overflow-hidden px-1 py-1">
                     <Image
                       src={bImg}
                       alt={banner.name || "Banner"}
