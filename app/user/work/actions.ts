@@ -45,6 +45,84 @@ export async function checkWorkerStatusServer(userId: string) {
   }
 }
 
+/** Verified worker + admin-set fee active — required to start/complete fee tasks. */
+export async function canWorkerPerformFeeTasksServer(
+  userId: string
+): Promise<{ ok: boolean; reason?: "no_worker" | "not_verified" | "fee_inactive" }> {
+  const adminApp = getFirebaseAdminApp();
+  if (!adminApp) return { ok: false, reason: "no_worker" };
+
+  const db = getFirestore(adminApp);
+  try {
+    const doc = await db.collection("workers").doc(userId).get();
+    if (!doc.exists) return { ok: false, reason: "no_worker" };
+    const d = doc.data() || {};
+    const status = d.status as string | undefined;
+    const fee = d.fee as string | undefined;
+    const statusOk = status === "verified" || status === "active";
+    if (!statusOk) return { ok: false, reason: "not_verified" };
+    if (fee !== "active") return { ok: false, reason: "fee_inactive" };
+    return { ok: true };
+  } catch (error) {
+    console.error("canWorkerPerformFeeTasksServer error:", error);
+    return { ok: false, reason: "no_worker" };
+  }
+}
+
+const EARNING_RECORDS_COLLECTION = "earning_records";
+
+export type EarningRecordListItem = {
+  id: string;
+  userId: string;
+  taskId: string;
+  reward: number;
+  completedAt: string | null;
+  platform: string;
+  adPrice: number;
+  workerPrice: number;
+  socialMediaPrice: number;
+  mediaId: string;
+  mediaType: string;
+  campaign: {
+    totalViews?: string;
+    targetUsers?: string;
+    timeAchieved?: string;
+    targetCountries?: { country?: string; exactViews?: string; percentage?: number }[];
+  };
+};
+
+export async function getEarningRecordsServer(userId: string): Promise<EarningRecordListItem[]> {
+  const adminApp = getFirebaseAdminApp();
+  if (!adminApp) return [];
+
+  const db = getFirestore(adminApp);
+  try {
+    const snap = await db.collection(EARNING_RECORDS_COLLECTION).where("userId", "==", userId).get();
+    const rows: EarningRecordListItem[] = snap.docs.map((doc) => {
+      const x = doc.data() || {};
+      return {
+        id: doc.id,
+        userId: String(x.userId ?? ""),
+        taskId: String(x.taskId ?? ""),
+        reward: Number(x.reward ?? 0),
+        completedAt: x.completedAt?.toDate?.()?.toISOString?.() ?? null,
+        platform: String(x.platform ?? "free"),
+        adPrice: Number(x.adPrice ?? 0),
+        workerPrice: Number(x.workerPrice ?? x.reward ?? 0),
+        socialMediaPrice: Number(x.socialMediaPrice ?? 0),
+        mediaId: String(x.mediaId ?? ""),
+        mediaType: String(x.mediaType ?? "image"),
+        campaign: (x.campaign as EarningRecordListItem["campaign"]) || {},
+      };
+    });
+    rows.sort((a, b) => (b.completedAt ?? "").localeCompare(a.completedAt ?? ""));
+    return rows;
+  } catch (error) {
+    console.error("getEarningRecordsServer error:", error);
+    return [];
+  }
+}
+
 export async function submitWorkerVerificationServer(userId: string, data: any) {
   const adminApp = getFirebaseAdminApp();
   if (!adminApp) return { success: false, error: "Firebase Admin not initialized" };
@@ -99,6 +177,38 @@ export async function getWorkerAccessServer(userId: string) {
   };
 }
 
+export type WorkerHomeSnapshot =
+  | { exists: false; balance: number; totalWithdrawal: number }
+  | {
+      exists: true;
+      balance: number;
+      totalWithdrawal: number;
+      status?: string;
+    };
+
+export async function getWorkerHomeSnapshotServer(userId: string): Promise<WorkerHomeSnapshot> {
+  const adminApp = getFirebaseAdminApp();
+  if (!adminApp) return { exists: false, balance: 0, totalWithdrawal: 0 };
+
+  const db = getFirestore(adminApp);
+  try {
+    const doc = await db.collection("workers").doc(userId).get();
+    if (!doc.exists) {
+      return { exists: false, balance: 0, totalWithdrawal: 0 };
+    }
+    const d = doc.data() || {};
+    return {
+      exists: true,
+      balance: Number(d.balance ?? 0),
+      totalWithdrawal: Number(d.totalWithdrawal ?? 0),
+      status: typeof d.status === "string" ? d.status : undefined,
+    };
+  } catch (error) {
+    console.error("getWorkerHomeSnapshotServer error:", error);
+    return { exists: false, balance: 0, totalWithdrawal: 0 };
+  }
+}
+
 export async function getWorkerTaskProgressServer(userId: string, taskId: string) {
   const adminApp = getFirebaseAdminApp();
   if (!adminApp) return null;
@@ -127,6 +237,23 @@ export async function startWorkerTaskServer(userId: string, taskId: string) {
   const adminApp = getFirebaseAdminApp();
   if (!adminApp) return { success: false, error: "Firebase Admin not initialized" };
   const db = getFirestore(adminApp);
+
+  const gate = await canWorkerPerformFeeTasksServer(userId);
+  if (!gate.ok) {
+    if (gate.reason === "fee_inactive") {
+      return {
+        success: false,
+        error: "Your registration fee must be active (verified by admin) before you can run tasks.",
+      };
+    }
+    if (gate.reason === "not_verified") {
+      return {
+        success: false,
+        error: "Complete worker verification and wait for approval before taking tasks.",
+      };
+    }
+    return { success: false, error: "Worker profile required" };
+  }
 
   const workerRef = db.collection("workers").doc(userId);
   const taskRef = db.collection("tasks").doc(taskId);
@@ -208,9 +335,16 @@ export async function completeWorkerTaskServer(userId: string, taskId: string) {
     return { success: false, error: "TimeAchieved is not complete yet" };
   }
 
+  const gate = await canWorkerPerformFeeTasksServer(userId);
+  if (!gate.ok) {
+    return { success: false, error: "Account is not eligible to complete fee tasks" };
+  }
+
   const task = taskDoc.data() || {};
   const platform = task.platform as string;
   const workerPrice = Number(task.workerPrice || 0);
+  const campaign = task.campaign || {};
+  const targetCountries = Array.isArray(campaign.targetCountries) ? campaign.targetCountries : [];
 
   const currentWorker = workerDoc.data() || {};
   const newBalance = Number(currentWorker.balance || 0) + workerPrice;
@@ -219,6 +353,8 @@ export async function completeWorkerTaskServer(userId: string, taskId: string) {
   if (platform && platform !== "free") {
     platformUpdates[platform] = "active";
   }
+
+  const completedAt = new Date();
 
   // Mark task completed & credit balance.
   await workerRef.update({
@@ -231,9 +367,38 @@ export async function completeWorkerTaskServer(userId: string, taskId: string) {
 
   await progressRef.update({
     status: "completed",
-    completedAt: new Date(),
+    completedAt,
     updatedAt: new Date(),
   });
+
+  const recordRef = db.collection(EARNING_RECORDS_COLLECTION).doc(`${userId}_${taskId}`);
+  await recordRef.set(
+    {
+      userId,
+      taskId,
+      reward: workerPrice,
+      completedAt,
+      platform: platform || "free",
+      adPrice: Number(task.adPrice ?? 0),
+      workerPrice,
+      socialMediaPrice: Number(task.socialMediaPrice ?? 0),
+      mediaId: String(task.mediaId ?? ""),
+      mediaType: String(task.mediaType ?? "image"),
+      logoId: task.logoId ? String(task.logoId) : "",
+      campaign: {
+        totalViews: campaign.totalViews != null ? String(campaign.totalViews) : "",
+        targetUsers: campaign.targetUsers != null ? String(campaign.targetUsers) : "",
+        timeAchieved: campaign.timeAchieved != null ? String(campaign.timeAchieved) : "",
+        targetCountries: targetCountries.map((c: Record<string, unknown>) => ({
+          country: c.country != null ? String(c.country) : "",
+          exactViews: c.exactViews != null ? String(c.exactViews) : "",
+          percentage: typeof c.percentage === "number" ? c.percentage : Number(c.percentage ?? 0),
+        })),
+      },
+      updatedAt: new Date(),
+    },
+    { merge: true }
+  );
 
   return { success: true, reward: workerPrice };
 }

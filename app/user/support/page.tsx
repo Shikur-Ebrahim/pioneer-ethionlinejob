@@ -47,6 +47,7 @@ export default function SupportPage() {
         ) : (
           <section className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
             <button
+              type="button"
               onClick={() => setShowCard((v) => !v)}
               className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
             >
@@ -57,7 +58,7 @@ export default function SupportPage() {
             {showCard && (
               <div className="mt-5 space-y-3">
                 <div className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
-                  <p className="mb-2 text-sm font-bold">Chat with Telegram Username</p>
+                  <p className="mb-2 text-sm font-bold">Contact support team</p>
                   {usernameUrl ? (
                     <a
                       href={usernameUrl}
@@ -66,7 +67,7 @@ export default function SupportPage() {
                       className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-500"
                     >
                       <Send className="h-4 w-4" />
-                      Open @{settings.username.replace(/^@/, "")}
+                      Open Telegram chat
                     </a>
                   ) : (
                     <p className="text-xs text-zinc-500">Admin has not set Telegram username yet.</p>
